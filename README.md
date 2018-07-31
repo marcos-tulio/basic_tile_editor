@@ -5,4 +5,5 @@
 
 ***
 * Main view
-![alt text](https://imgur.com/download/gkzPkYt)
+
+<img width="600px" src="https://imgur.com/download/gkzPkYt"/>
