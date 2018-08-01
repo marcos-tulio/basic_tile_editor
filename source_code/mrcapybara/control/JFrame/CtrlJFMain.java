@@ -48,7 +48,7 @@ public class CtrlJFMain extends JFrameMain {
     private List<Object[]> listTask;
     private int indexTask = 0;
 
-    private boolean wasChanged = false;
+    private boolean wasChanged = false, paletteChanged = false;
 
     public CtrlJFMain() {
         initComponents();
@@ -59,6 +59,8 @@ public class CtrlJFMain extends JFrameMain {
 
         this.loadTableWork(null);
         this.addListeners();
+
+        newPalette();
     }
 
     private void addListeners() {
@@ -434,6 +436,7 @@ public class CtrlJFMain extends JFrameMain {
                             }
                         }
 
+                        paletteChanged = true;
                         refresh();
                     } else {
                         if (_row >= 0 && _column >= 0) {
@@ -558,29 +561,36 @@ public class CtrlJFMain extends JFrameMain {
     }
 
     private void newPalette() {
-        if (!cellRender.getListColors().isEmpty()) {
+        if (!cellRender.getListColors().isEmpty() && paletteChanged) {
             int result = JOptionPane.showConfirmDialog(this, "Deseja salvar a paleta atual?", "Salvar paleta", JOptionPane.YES_NO_CANCEL_OPTION);
 
-            if (JOptionPane.YES_OPTION == result) {
-                savePalette();
+            if (JOptionPane.YES_OPTION == result || JOptionPane.NO_OPTION == result) {
+                if (JOptionPane.YES_OPTION == result) {
+                    savePalette();
+                }
+
                 cellRender.getListColors().clear();
+                fillPalette();
                 refresh();
 
                 lblColor1.setBackground(Color.BLACK);
                 lblColor1.setForeground(Color.WHITE);
                 lblColor2.setBackground(Color.BLACK);
                 lblColor2.setForeground(Color.WHITE);
-            } else if (JOptionPane.NO_OPTION == result) {
-                cellRender.getListColors().clear();
-                refresh();
 
-                lblColor1.setBackground(Color.BLACK);
-                lblColor1.setForeground(Color.WHITE);
-                lblColor2.setBackground(Color.BLACK);
-                lblColor2.setForeground(Color.WHITE);
+                paletteChanged = false;
             }
-        }
+        } else {
+            fillPalette();
+            refresh();
 
+            lblColor1.setBackground(Color.BLACK);
+            lblColor1.setForeground(Color.WHITE);
+            lblColor2.setBackground(Color.BLACK);
+            lblColor2.setForeground(Color.WHITE);
+
+            paletteChanged = false;
+        }
     }
 
     private void savePalette() {
@@ -653,6 +663,7 @@ public class CtrlJFMain extends JFrameMain {
                 stream.close();
 
                 local = chooser.getSelectedFile().toPath().toString();
+                paletteChanged = false;
                 JOptionPane.showMessageDialog(null, "Paleta salva com sucesso!", "Paleta salva", JOptionPane.INFORMATION_MESSAGE);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Erro ao salvar a paleta!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -686,10 +697,19 @@ public class CtrlJFMain extends JFrameMain {
                         && new String(_palData, "UTF-8").equals("PAL data")) {
 
                     cellRender.getListColors().clear();
+                    int r, g, b;
+
                     for (int i = 0; i < (short) listInfo.get(listInfo.size() - 1); i++) {
-                        cellRender.getListColors().add(
-                                new Color(in.readUnsignedByte(), in.readUnsignedByte(), in.readUnsignedByte()));
+                        r = in.readUnsignedByte();
+                        g = in.readUnsignedByte();
+                        b = in.readUnsignedByte();
+
+                        cellRender.getListColors().add(new Color(r, g, b));
                         in.readByte();//0x00
+
+                        if (cellRender.getListColors().size() >= 256) {
+                            break;
+                        }
                     }
 
                     if (cellRender.getListColors().size() >= 0) {
@@ -704,12 +724,23 @@ public class CtrlJFMain extends JFrameMain {
                         lblColor2.setForeground(component.getForeground());
                     }
                     local = chooser.getSelectedFile().toPath().toString();
+                    fillPalette();
                     refresh();
+                    paletteChanged = true;
                 } else {
-                    JOptionPane.showMessageDialog(null, "Paleta não compatível!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Ops... Paleta incompatível!", "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Erro ao carregar a paleta!", "Erro", JOptionPane.ERROR_MESSAGE);
+                if (JOptionPane.YES_OPTION
+                        == JOptionPane.showConfirmDialog(null, "Ops... Paleta incompatível, tentar carrega-la mesmo assim?", "Aviso", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
+                    fillPalette();
+                    refresh();
+                } else {
+                    cellRender.getListColors().clear();
+                    newPalette();
+                }
+
+                paletteChanged = true;
             }
         }
     }
@@ -828,7 +859,7 @@ public class CtrlJFMain extends JFrameMain {
             }
         });
 
-        _dialog.add(new JLabel("<html><div align='center'>Basic Tile Editor 0.0.1<br>"
+        _dialog.add(new JLabel("<html><div align='center'>Basic Tile Editor 0.0.2<br>"
                 + "Basic Tile Editor é um software de distribuição livre.<br><br>"
                 + "É permitida a edição e cópia, parcial ou completa, deste.<br>"
                 + "Outrossim, é de inteira responsabilidade do usuário qualquer alteração e/ou prática envolvendo este software, isentando, assim, o autor.<br>"
@@ -837,6 +868,16 @@ public class CtrlJFMain extends JFrameMain {
 
         _dialog.setModal(true);
         _dialog.setVisible(true);
+    }
+
+    private void fillPalette() {
+        for (int i = cellRender.getListColors().size(); i < 255; i++) {
+            cellRender.getListColors().add(Color.WHITE);
+        }
+
+        if (cellRender.getListColors().size() == 255) {
+            cellRender.getListColors().add(Color.BLACK);
+        }
     }
 
 }

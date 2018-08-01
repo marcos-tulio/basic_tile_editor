@@ -31,14 +31,17 @@ public class TableModelCellRender extends DefaultTableCellRenderer {
         }
 
         if (isTableRom && column == 0) {
-            super.setBackground(Color.white);
-            super.setForeground(Color.black);
+            super.setBackground(Color.WHITE);
+            super.setForeground(Color.BLACK);
+            
         } else if (!_str.isEmpty()) {
-            Color _colorB;
-            if (listColors == null || listColors.isEmpty()) {
-                _colorB = Color.BLACK;
-            } else {
-                _colorB = listColors.get(Integer.parseInt(_str, 16));
+            Color _colorB = Color.BLACK;
+            if (listColors != null && !listColors.isEmpty()) {
+                try {
+                    _colorB = listColors.get(Integer.parseInt(_str, 16));
+                } catch (java.lang.IndexOutOfBoundsException ex) {
+                    System.err.println("Error ao carregar a cor!");
+                }
             }
 
             super.setBackground(_colorB);
@@ -51,9 +54,8 @@ public class TableModelCellRender extends DefaultTableCellRenderer {
 
         } else {
             super.setBackground(Color.white);
-            super.setForeground(Color.white);
+            super.setForeground(Color.black);
         }
-
         return cellComponent;
     }
 
