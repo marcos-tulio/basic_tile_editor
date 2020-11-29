@@ -8,7 +8,6 @@ This is basically a hexadecimal editor with colors for each value, that is somet
 * Main view
 
 <img width="600px" src="https://imgur.com/download/gkzPkYt"/>
-<img width="600px" src="https://imgur.com/download/5iwHK7w"/>
 
 ***
 * Log<br>
