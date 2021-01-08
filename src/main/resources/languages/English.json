@@ -1,0 +1,77 @@
+{ 
+    "APP_TITLE": "Basic Tile Editor 0.0.3 - By Marcos Santos (MrCapybara)",
+    "MENU_FILE": "File",
+    "MENU_EDIT": "Edit",
+    "MENU_HELP": "Help",
+
+    "MENU_FILE_OPEN": "Load ROM...",
+    "MENU_FILE_SAVE": "Save",
+    "MENU_FILE_QUIT": "Exit",
+    "MENU_HELP_ABOUT": "About",
+
+    "MENU_EDIT_NEXT_BYTE": "Next byte",
+    "MENU_EDIT_PREV_BYTE": "Previous byte",
+    "MENU_EDIT_NEXT_ROW": "Next row",
+    "MENU_EDIT_PREV_ROW": "Previous row",
+    "MENU_EDIT_INC_CELL": "Increment cell size",
+    "MENU_EDIT_DEC_CELL": "Decrease cell size",
+    "MENU_EDIT_ADD_COL": "Add column",
+    "MENU_EDIT_REM_COL": "Remove column",
+    "MENU_EDIT_ADD_ROW": "Add row",
+    "MENU_EDIT_REM_ROW": "Remove row",
+    "MENU_EDIT_UNDO": "Undo",
+
+    "PANEL_TABLE_TITLE": "Table",
+    "PANEL_TABLE_SHOW_TXT": "Show texts",
+    "PANEL_TABLE_SIZE": "Size:",
+    "PANEL_TABLE_COLS": "Columns:",
+    "PANEL_TABLE_ROWS": "Rows:",
+
+    "PANEL_FILE_TITLE": "File",
+    "PANEL_FILE_SIZE": "Size:",
+    "PANEL_FILE_OFFSET": "Offset:",
+
+    "PANEL_PALETTE_TITLE": "Color palette",
+    "PANEL_PALETTE_NEW": "New palette",
+    "PANEL_PALETTE_SAVE": "Save palette",
+    "PANEL_PALETTE_LOAD": "Load palette",
+
+    "PANEL_EDIT_TITLE": "Edit",
+    "PANEL_EDIT_MODE": "Edit mode",
+    "PANEL_EDIT_MODE_TOOLTIP": "If this is enabled: when you click on a byte, in the ROM table, it will be changed",
+    "PANEL_EDIT_PALETTE": "Edit palette",
+    "PANEL_EDIT_LEFT_BUTTON": "Left button: ",
+    "PANEL_EDIT_RIGHT_BUTTON": "Right button: ",
+
+    "DIALOG_TITLE_PALETTE_SAVE": "Save palette",
+    "DIALOG_TITLE_PALETTE_LOAD": "Load palette",
+    "DIALOG_TITLE_COLOR_CHOOSE": "Select a color",
+    "DIALOG_PALETTE_EXTESION": "Palettes",
+
+    "MESSAGE_TITLE_SAVE": "Save",
+    "MESSAGE_TITLE_ERROR": "Error",
+    "MESSAGE_TITLE_WARNING": "Warning",
+    "MESSAGE_TITLE_SAVE_FILE": "Save file",
+    "MESSAGE_TITLE_SAVE_PALETTE": "Save palette",
+    "MESSAGE_TITLE_REPLACE_FILE": "Replace file",
+    "MESSAGE_TITLE_SUCCESS_SAVE_FILE": "File has been salved",
+    "MESSAGE_TITLE_SUCCESS_SAVE_PALETTE": "Palette has been salved",
+
+    "MESSAGE_QUESTION_SAVE_FILE": "Do you want to save the file?",
+    "MESSAGE_QUESTION_REPLACE_FILE": "Replace \"%F1%\"?",
+    "MESSAGE_QUESTION_LOAD_PALETTE": "Oops... Incompatible palette, try to load it anyway?",
+    "MESSAGE_QUESTION_SAVE_PALETTE": "Do you want to save the current palette?",
+
+    "MESSAGE_SUCCESS_SAVE_FILE": "File saved successfully!",
+    "MESSAGE_SUCCESS_SAVE_PALETTE": "Palette saved successfully!",
+
+    "MESSAGE_ERROR_SAVE_FILE": "Error saving the file!",
+    "MESSAGE_ERROR_LOAD_FILE": "Error loading the file!",
+    "MESSAGE_ERROR_SAVE_PALETTE": "Error saving the palette!",
+    "MESSAGE_ERROR_LOAD_PALETTE": "Oops... Incompatible palette!",
+    "MESSAGE_ERROR_OFFSET": "This offset don't exist!",
+
+    "FRAME_ABOUT_TITLE": "About",
+    "FRAME_ABOUT_AVAILABLE": "<html><div align='center'>Disponível em<br><a href='#'>Git Hub</a>",
+    "FRAME_ABOUT_CREDITS": "<html><div align='center'>Basic Tile Editor 0.0.3<br>Basic Tile Editor is a free software.<br><br>Editing and copying, partial or complete, of this is allowed.<br> However, the user is entirely responsible for any changes and / or practices involving this software, thus exempting the author.<br><br><br><br>Developed by<br> <div style='color:%F1%'>Marcos Santos</div><br><br>"
+}

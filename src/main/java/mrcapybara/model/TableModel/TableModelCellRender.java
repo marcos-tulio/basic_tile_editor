@@ -26,14 +26,12 @@ public class TableModelCellRender extends DefaultTableCellRenderer {
         isTableRom = table.getName().equalsIgnoreCase("rom");
         String _str = table.getValueAt(row, column).toString().replaceAll(" ", "");
 
-        if (!isTableRom) {
-            setBorder(noFocusBorder);
-        }
+        if (!isTableRom) setBorder(noFocusBorder);
 
         if (isTableRom && column == 0) {
             super.setBackground(Color.WHITE);
             super.setForeground(Color.BLACK);
-            
+
         } else if (!_str.isEmpty()) {
             Color _colorB = Color.BLACK;
             if (listColors != null && !listColors.isEmpty()) {
@@ -46,11 +44,10 @@ public class TableModelCellRender extends DefaultTableCellRenderer {
 
             super.setBackground(_colorB);
 
-            if (!isTableRom || (isTableRom && enableTxt)) {
+            if (!isTableRom || (isTableRom && enableTxt))
                 super.setForeground(colorForeground(_colorB));
-            } else {
+            else
                 super.setForeground(_colorB);
-            }
 
         } else {
             super.setBackground(Color.white);

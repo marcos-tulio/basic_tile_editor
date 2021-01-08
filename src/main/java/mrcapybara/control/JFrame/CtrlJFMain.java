@@ -32,14 +32,15 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+import mrcapybara.model.Constants;
 import net.miginfocom.swing.MigLayout;
-import mrcapybara.view.JFrame.JFrameMain;
+import mrcapybara.view.JFrame.FrameMain;
 
 /**
  *
- * @author Jakecoll
+ * @author Marcos Santos
  */
-public class CtrlJFMain extends JFrameMain {
+public class CtrlJFMain extends FrameMain {
 
     private final String EXTENSION = ".pal";
     private String local = FileSystemView.getFileSystemView().getHomeDirectory().toString(), fileName = "";
@@ -175,13 +176,12 @@ public class CtrlJFMain extends JFrameMain {
         tablePalette.addMouseListener(tablePaletteAction());
 
         slider.addChangeListener((e) -> {
-            int _value = slider.getValue();
+            int value = slider.getValue();
 
-            if ((_value + columnBlocks * rowBlocks) >= bytes.length) {
-                _value -= columnBlocks * rowBlocks;
-            }
+            if ((value + columnBlocks * rowBlocks) >= bytes.length)
+                value -= columnBlocks * rowBlocks;
 
-            offset = _value;
+            offset = value;
             keyAdd(0);
         });
 
@@ -193,10 +193,14 @@ public class CtrlJFMain extends JFrameMain {
     private ActionListener openFile() {
         return (ActionEvent e) -> {
             if (wasChanged) {
-                if ((JOptionPane.showConfirmDialog(null, "Deseja salvar o arquivo?", "Salvar", JOptionPane.YES_NO_OPTION)
-                        == JOptionPane.YES_OPTION)) {
-                    saveFile();
-                }
+                int boxSave = JOptionPane.showConfirmDialog(
+                        null,
+                        Constants.TEXT.get("MESSAGE_QUESTION_SAVE_FILE"),
+                        Constants.TEXT.get("MESSAGE_TITLE_SAVE_FILE"),
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (boxSave == JOptionPane.YES_OPTION) saveFile();
             }
 
             JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -224,7 +228,7 @@ public class CtrlJFMain extends JFrameMain {
                         }
 
                         local = chooser.getSelectedFile().getAbsolutePath();
-                        fileName = chooser.getSelectedFile().getName();
+                        this.fileName = chooser.getSelectedFile().getName();
                         itemSave.setEnabled(true);
 
                         if (bytes.length > columnBlocks * rowBlocks) {
@@ -241,7 +245,7 @@ public class CtrlJFMain extends JFrameMain {
                         btnNext.setBackground(COLOR);
                     }
                 } catch (IOException | java.lang.OutOfMemoryError ex) {
-                    JOptionPane.showMessageDialog(null, "Erro ao carregar o arquivo.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, Constants.TEXT.get("MESSAGE_ERROR_LOAD_FILE"), Constants.TEXT.get("MESSAGE_TITLE_ERROR"), JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
@@ -253,24 +257,21 @@ public class CtrlJFMain extends JFrameMain {
                 @Override
                 public void approveSelection() {
                     if (getSelectedFile().exists() && getDialogType() == SAVE_DIALOG) {
-                        int result = JOptionPane.showConfirmDialog(this, "Substituir \"" + getSelectedFile().getName() + "\"?", "Substituir arquivo", JOptionPane.YES_NO_OPTION);
-                        switch (result) {
-                            case JOptionPane.YES_OPTION:
-                                super.approveSelection();
-                                return;
-                            case JOptionPane.NO_OPTION:
-                                return;
-                            case JOptionPane.CLOSED_OPTION:
-                                return;
-                            case JOptionPane.CANCEL_OPTION:
-                                cancelSelection();
-                                return;
-                        }
-                    }
-                    super.approveSelection();
+                        int result = JOptionPane.showConfirmDialog(this,
+                                Constants.TEXT.get("MESSAGE_QUESTION_REPLACE_FILE").replaceAll("%F1%", getSelectedFile().getName()),
+                                Constants.TEXT.get("MESSAGE_TITLE_REPLACE_FILE"),
+                                JOptionPane.YES_NO_OPTION
+                        );
+
+                        if (result == JOptionPane.YES_OPTION)
+                            super.approveSelection();
+                        if (result == JOptionPane.CANCEL_OPTION)
+                            super.cancelSelection();
+
+                    } else super.approveSelection();
                 }
             };
-            chooser.setDialogTitle("Salvar Arquivo");
+            chooser.setDialogTitle(Constants.TEXT.get("MESSAGE_TITLE_SAVE_FILE"));
             chooser.setSelectedFile(new File(fileName));
 
             if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -281,9 +282,10 @@ public class CtrlJFMain extends JFrameMain {
                     fos.close();
 
                     local = chooser.getSelectedFile().toPath().toString();
-                    JOptionPane.showMessageDialog(null, "Arquivo salvo com sucesso!", "Arquivo salvo", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, Constants.TEXT.get("MESSAGE_SUCCESS_SAVE_FILE"), Constants.TEXT.get("MESSAGE_TITLE_SUCCESS_SAVE_FILE"), JOptionPane.INFORMATION_MESSAGE);
+
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(null, "Erro ao salvar o arquivo!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, Constants.TEXT.get("MESSAGE_ERROR_SAVE_FILE"), Constants.TEXT.get("MESSAGE_TITLE_ERROR"), JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
@@ -308,7 +310,12 @@ public class CtrlJFMain extends JFrameMain {
                     _offset = 0;
                 }
             } catch (NumberFormatException exec) {
-                JOptionPane.showMessageDialog(null, "Offset inexistente!", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        null,
+                        Constants.TEXT.get("MESSAGE_ERROR_OFFSET"),
+                        Constants.TEXT.get("MESSAGE_TITLE_ERROR"),
+                        JOptionPane.ERROR_MESSAGE
+                );
             }
 
             offset = _offset;
@@ -349,15 +356,13 @@ public class CtrlJFMain extends JFrameMain {
                     indexTask = 0;
                     itemUndo.setEnabled(false);
                 }
-            } else if (indexTask == 0) {
+            } else if (indexTask == 0)
                 itemUndo.setEnabled(false);
-            }
         };
     }
 
     private MouseAdapter btnBehavior() {
         return new MouseAdapter() {
-
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (e.getComponent().isEnabled()) {
@@ -410,29 +415,27 @@ public class CtrlJFMain extends JFrameMain {
                     Component _component = tablePalette.prepareRenderer(cellRender, _row, _column);
 
                     if (boxSetPal.isSelected()) {
-                        Color _colorB = Color.BLACK;
+                        Color colorB = Color.BLACK;
 
                         if (cellRender.getListColors().isEmpty()) {
-                            for (int i = 0; i < 256; i++) {
+                            for (int i = 0; i < 256; i++)
                                 cellRender.getListColors().add(Color.BLACK);
-                            }
-                        } else {
-                            _colorB = _component.getBackground();
-                        }
+                        } else
+                            colorB = _component.getBackground();
 
-                        _colorB = JColorChooser.showDialog(getContentPane(), "Selecione uma cor", _colorB);
+                        colorB = JColorChooser.showDialog(getContentPane(), Constants.TEXT.get("DIALOG_TITLE_COLOR_CHOOSE"), colorB);
 
-                        if (_colorB != null) {
-                            cellRender.getListColors().set(_column + (_row * 16), _colorB);
-                            Color _colorF = cellRender.colorForeground(_colorB);
+                        if (colorB != null) {
+                            cellRender.getListColors().set(_column + (_row * 16), colorB);
+                            Color colorF = cellRender.colorForeground(colorB);
 
                             if (lblColor1.getText().equalsIgnoreCase(_txt)) {
-                                lblColor1.setBackground(_colorB);
-                                lblColor1.setForeground(_colorF);
+                                lblColor1.setBackground(colorB);
+                                lblColor1.setForeground(colorF);
                             }
                             if (lblColor2.getText().equalsIgnoreCase(_txt)) {
-                                lblColor2.setBackground(_colorB);
-                                lblColor2.setForeground(_colorF);
+                                lblColor2.setBackground(colorB);
+                                lblColor2.setForeground(colorF);
                             }
                         }
 
@@ -473,27 +476,23 @@ public class CtrlJFMain extends JFrameMain {
                         if (_offset < bytes.length) {
                             Object[] _object = new Object[]{_offset, tableWork.getValueAt(_row, _column).toString()};
                             if (!listTask.contains(_object)) {
-                                if (listTask.size() >= 20) {
+                                if (listTask.size() >= 20)
                                     listTask.remove(0);
-                                }
 
                                 listTask.add(_object);
                                 itemUndo.setEnabled(true);
 
                                 indexTask = listTask.size() - 1;
-                                if (indexTask < 0) {
+                                if (indexTask < 0)
                                     indexTask = 0;
-                                }
 
-                                if (e.getButton() == MouseEvent.BUTTON1) {
+                                if (e.getButton() == MouseEvent.BUTTON1)
                                     bytes[_offset] = (byte) (Integer.parseInt(lblColor1.getText(), 16));
-                                } else {
+                                else
                                     bytes[_offset] = (byte) (Integer.parseInt(lblColor2.getText(), 16));
-                                }
 
-                                if (!wasChanged) {
+                                if (!wasChanged)
                                     wasChanged = true;
-                                }
                             }
                         }
                         loadTableWork(bytes);
@@ -505,20 +504,20 @@ public class CtrlJFMain extends JFrameMain {
 
     private void keyAdd(int value) {
         int newOffset = offset + value;
-        int _leght = bytes.length - 1;
+        int lenght = bytes.length - 1;
 
-        if (newOffset <= _leght) {
+        if (newOffset <= lenght) {
             offset = newOffset;
             loadTableWork(bytes);
 
             txtOffset.setText(Integer.toHexString(offset).toUpperCase() + "h");
 
-            if (offset >= _leght) {
+            if (offset >= lenght) {
                 btnPlus.setEnabled(false);
                 btnPlus.setBackground(COLOR);
                 btnNext.setEnabled(false);
                 btnNext.setBackground(COLOR);
-            } else if (offset + columnBlocks > _leght) {
+            } else if (offset + columnBlocks > lenght) {
                 btnNext.setEnabled(false);
                 btnNext.setBackground(COLOR);
             }
@@ -549,25 +548,26 @@ public class CtrlJFMain extends JFrameMain {
                 btnPre.setBackground(COLOR);
             }
 
-            int _leght = bytes.length - 1;
-            if (offset < _leght) {
+            int lenght = bytes.length - 1;
+            if (offset < lenght) {
                 btnPlus.setEnabled(true);
-                if (offset + columnBlocks <= _leght) {
+                if (offset + columnBlocks <= lenght)
                     btnNext.setEnabled(true);
-                }
             }
-
         }
     }
 
     private void newPalette() {
         if (!cellRender.getListColors().isEmpty() && paletteChanged) {
-            int result = JOptionPane.showConfirmDialog(this, "Deseja salvar a paleta atual?", "Salvar paleta", JOptionPane.YES_NO_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(this,
+                    Constants.TEXT.get("MESSAGE_QUESTION_SAVE_PALETTE"),
+                    Constants.TEXT.get("MESSAGE_TITLE_SAVE_PALETTE"),
+                    JOptionPane.YES_NO_CANCEL_OPTION
+            );
 
             if (JOptionPane.YES_OPTION == result || JOptionPane.NO_OPTION == result) {
-                if (JOptionPane.YES_OPTION == result) {
+                if (JOptionPane.YES_OPTION == result)
                     savePalette();
-                }
 
                 cellRender.getListColors().clear();
                 fillPalette();
@@ -594,53 +594,47 @@ public class CtrlJFMain extends JFrameMain {
     }
 
     private void savePalette() {
-        for (int i = cellRender.getListColors().size(); i < 256; i++) {
+        for (int i = cellRender.getListColors().size(); i < 256; i++)
             cellRender.getListColors().add(Color.BLACK);
-        }
 
         JFileChooser chooser = new JFileChooser(local) {
             @Override
             public void approveSelection() {
-                String _fileToOpen = getSelectedFile().toString();
-                File _file;
+                String fileToOpen = getSelectedFile().toString();
+                File file;
 
-                if (_fileToOpen.endsWith(EXTENSION)) {
-                    _file = new File(_fileToOpen);
-                } else {
-                    _file = new File(_fileToOpen + EXTENSION);
-                }
+                if (fileToOpen.endsWith(EXTENSION))
+                    file = new File(fileToOpen);
+                else
+                    file = new File(fileToOpen + EXTENSION);
 
-                if (_file.exists() && getDialogType() == SAVE_DIALOG) {
-                    int result = JOptionPane.showConfirmDialog(this, "Substituir \"" + _file.getName() + "\"?", "Substituir arquivo", JOptionPane.YES_NO_OPTION);
-                    switch (result) {
-                        case JOptionPane.YES_OPTION:
-                            super.approveSelection();
-                            return;
-                        case JOptionPane.NO_OPTION:
-                            return;
-                        case JOptionPane.CLOSED_OPTION:
-                            return;
-                        case JOptionPane.CANCEL_OPTION:
-                            cancelSelection();
-                            return;
-                    }
-                }
-                super.approveSelection();
+                if (file.exists() && getDialogType() == SAVE_DIALOG) {
+                    int result = JOptionPane.showConfirmDialog(this,
+                            Constants.TEXT.get("MESSAGE_QUESTION_REPLACE_FILE").replaceAll("%FILE_NAME%", getSelectedFile().getName()),
+                            Constants.TEXT.get("MESSAGE_TITLE_REPLACE_FILE"),
+                            JOptionPane.YES_NO_OPTION
+                    );
+
+                    if (result == JOptionPane.YES_OPTION)
+                        super.approveSelection();
+                    if (result == JOptionPane.CANCEL_OPTION)
+                        super.cancelSelection();
+
+                } else super.approveSelection();
             }
         };
-        chooser.setDialogTitle("Salvar paleta");
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Paletas", EXTENSION.replace(".", "")));
+        chooser.setDialogTitle(Constants.TEXT.get("DIALOG_TITLE_PALETTE_SAVE"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter(Constants.TEXT.get("DIALOG_PALETTE_EXTESION"), EXTENSION.replace(".", "")));
         chooser.setAcceptAllFileFilterUsed(false);
 
         if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
-                String _fileName = chooser.getSelectedFile().toString();
+                String fileName = chooser.getSelectedFile().toString();
 
-                if (!_fileName.endsWith(EXTENSION)) {
-                    _fileName = _fileName + EXTENSION;
-                }
+                if (!fileName.endsWith(EXTENSION))
+                    fileName = fileName + EXTENSION;
 
-                OutputStream stream = new FileOutputStream(_fileName);
+                OutputStream stream = new FileOutputStream(fileName);
                 DataOutputStream out = new DataOutputStream(stream);
 
                 out.write(("RIFF").getBytes());
@@ -664,9 +658,14 @@ public class CtrlJFMain extends JFrameMain {
 
                 local = chooser.getSelectedFile().toPath().toString();
                 paletteChanged = false;
-                JOptionPane.showMessageDialog(null, "Paleta salva com sucesso!", "Paleta salva", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        Constants.TEXT.get("MESSAGE_SUCCESS_SAVE_PALETTE"),
+                        Constants.TEXT.get("MESSAGE_TITLE_SUCCESS_SAVE_PALETTE"),
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Erro ao salvar a paleta!", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, Constants.TEXT.get("MESSAGE_ERROR_SAVE_PALETTE"), Constants.TEXT.get("MESSAGE_TITLE_ERROR"), JOptionPane.ERROR_MESSAGE);
             }
         }
 
@@ -674,8 +673,8 @@ public class CtrlJFMain extends JFrameMain {
 
     private void loadPalette() {
         JFileChooser chooser = new JFileChooser(local);
-        chooser.setDialogTitle("Carregar paleta");
-        chooser.addChoosableFileFilter(new FileNameExtensionFilter("Paletas", EXTENSION.replace(".", "")));
+        chooser.setDialogTitle(Constants.TEXT.get("DIALOG_TITLE_PALETTE_LOAD"));
+        chooser.addChoosableFileFilter(new FileNameExtensionFilter(Constants.TEXT.get("DIALOG_PALETTE_EXTESION"), EXTENSION.replace(".", "")));
         chooser.setAcceptAllFileFilterUsed(false);
 
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -683,17 +682,17 @@ public class CtrlJFMain extends JFrameMain {
                 InputStream stream = new FileInputStream(chooser.getSelectedFile());
                 DataInputStream in = new DataInputStream(stream);
 
-                byte[] _riff = new byte[4], _palData = new byte[8];
+                byte[] riff = new byte[4], _palData = new byte[8];
                 List<Object> listInfo = new ArrayList<>();
 
-                in.read(_riff);
+                in.read(riff);
                 listInfo.add(Integer.reverseBytes(in.readInt()));
                 in.read(_palData);
                 listInfo.add(Integer.reverseBytes(in.readInt()));
                 listInfo.add(Short.reverseBytes(in.readShort()));
                 listInfo.add(Short.reverseBytes(in.readShort()));
 
-                if (new String(_riff, "UTF-8").equals("RIFF")
+                if (new String(riff, "UTF-8").equals("RIFF")
                         && new String(_palData, "UTF-8").equals("PAL data")) {
 
                     cellRender.getListColors().clear();
@@ -707,9 +706,8 @@ public class CtrlJFMain extends JFrameMain {
                         cellRender.getListColors().add(new Color(r, g, b));
                         in.readByte();//0x00
 
-                        if (cellRender.getListColors().size() >= 256) {
+                        if (cellRender.getListColors().size() >= 256)
                             break;
-                        }
                     }
 
                     if (cellRender.getListColors().size() >= 0) {
@@ -727,12 +725,13 @@ public class CtrlJFMain extends JFrameMain {
                     fillPalette();
                     refresh();
                     paletteChanged = true;
-                } else {
-                    JOptionPane.showMessageDialog(null, "Ops... Paleta incompatível!", "Erro", JOptionPane.ERROR_MESSAGE);
-                }
+
+                } else
+                    JOptionPane.showMessageDialog(null, Constants.TEXT.get("MESSAGE_ERROR_LOAD_PALETTE"), Constants.TEXT.get("MESSAGE_TITLE_ERROR"), JOptionPane.ERROR_MESSAGE);
+
             } catch (IOException ex) {
                 if (JOptionPane.YES_OPTION
-                        == JOptionPane.showConfirmDialog(null, "Ops... Paleta incompatível, tentar carrega-la mesmo assim?", "Aviso", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
+                        == JOptionPane.showConfirmDialog(null, Constants.TEXT.get("MESSAGE_QUESTION_LOAD_PALETTE"), Constants.TEXT.get("MESSAGE_TITLE_WARNING"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
                     fillPalette();
                     refresh();
                 } else {
@@ -745,14 +744,14 @@ public class CtrlJFMain extends JFrameMain {
         }
     }
 
-    private void loadTableWork(byte[] _bytes) {
+    private void loadTableWork(byte[] bytes) {
         tmWork.removeAll();
         tmWork.removeAllColumns();
 
         ArrayList<Object> rows = new ArrayList();
         tmWork.addColumn("", String.class);
 
-        if (_bytes == null) {
+        if (bytes == null) {
             rows.add("");
             for (int i = 0; i < columnBlocks; i++) {
                 tmWork.addColumn(i + "", String.class);
@@ -772,7 +771,7 @@ public class CtrlJFMain extends JFrameMain {
                 rows.add(i + "");
                 for (int j = 0; j < columnBlocks; j++) {
                     try {
-                        rows.add(String.format("%02X", _bytes[(j + (i * columnBlocks) + offset)]));
+                        rows.add(String.format("%02X", bytes[(j + (i * columnBlocks) + offset)]));
                     } catch (java.lang.ArrayIndexOutOfBoundsException exception) {
                         rows.add("");
                     }
@@ -786,10 +785,10 @@ public class CtrlJFMain extends JFrameMain {
     }
 
     private void refreshViewTableWork() {
-        int _width = (blockSize * (columnBlocks + 1)) + 20;
+        int width = (blockSize * (columnBlocks + 1)) + 20;
 
         tableWork.setRowHeight(blockSize);
-        tableWork.getTableHeader().setPreferredSize(new Dimension(_width, blockSize));
+        tableWork.getTableHeader().setPreferredSize(new Dimension(width, blockSize));
 
         for (int i = 0; i < tableWork.getColumnCount(); i++) {
             tableWork.getColumnModel().getColumn(i).setResizable(false);
@@ -797,14 +796,18 @@ public class CtrlJFMain extends JFrameMain {
             tableWork.getColumnModel().getColumn(i).setMaxWidth(blockSize);
         }
 
-        scrollWork.setPreferredSize(new Dimension(_width, (blockSize * (rowBlocks + 1)) + 20));
+        scrollWork.setPreferredSize(new Dimension(width, (blockSize * (rowBlocks + 1)) + 20));
 
         refresh();
     }
 
     private void exit() {
         if (wasChanged) {
-            int result = JOptionPane.showConfirmDialog(null, "Deseja salvar o arquivo?", "Salvar", JOptionPane.YES_NO_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(null,
+                    Constants.TEXT.get("MESSAGE_QUESTION_SAVE_FILE"),
+                    Constants.TEXT.get("MESSAGE_TITLE_SAVE"),
+                    JOptionPane.YES_NO_CANCEL_OPTION
+            );
 
             switch (result) {
                 case JOptionPane.NO_OPTION:
@@ -816,9 +819,8 @@ public class CtrlJFMain extends JFrameMain {
                     System.exit(0);
                     break;
             }
-        } else {
+        } else
             System.exit(0);
-        }
     }
 
     private void refresh() {
@@ -827,57 +829,41 @@ public class CtrlJFMain extends JFrameMain {
     }
 
     private void about() {
-        String _color;
+        String[] colors = {"blue", "green", "red", "orange", "purple"};
 
-        switch (new Random().nextInt(3)) {
-            case 0:
-                _color = "blue";
-                break;
-            case 1:
-                _color = "green";
-                break;
-            default:
-                _color = "red";
-        }
+        JDialog dialog = new JDialog(getOwner(), Constants.TEXT.get("FRAME_ABOUT_TITLE"));
+        dialog.setSize(400, 300);
+        dialog.setResizable(false);
+        dialog.setLocationRelativeTo(this.getContentPane());
+        dialog.setLayout(new MigLayout("fill"));
 
-        JDialog _dialog = new JDialog(getOwner(), "Sobre");
-        _dialog.setSize(350, 300);
-        _dialog.setResizable(false);
-        _dialog.setLocationRelativeTo(this.getContentPane());
-        _dialog.setLayout(new MigLayout("fill"));
-
-        JLabel _label = new JLabel("<html><div align='center'>Disponível em<br><a href='#'>Git Hub</a>");
-        _label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        _label.addMouseListener(new MouseAdapter() {
+        JLabel label = new JLabel(Constants.TEXT.get("FRAME_ABOUT_AVAILABLE"));
+        label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI("https://github.com/mrcapybara/basic_tile_editor"));
+                    Desktop.getDesktop().browse(new URI("https://github.com/marcos-tulio/basic_tile_editor"));
                 } catch (IOException | URISyntaxException ex) {
-                    System.err.println("Houston, temos um problema!");
+                    System.err.println("Generic error...");
                 }
             }
         });
 
-        _dialog.add(new JLabel("<html><div align='center'>Basic Tile Editor 0.0.2<br>"
-                + "Basic Tile Editor é um software de distribuição livre.<br><br>"
-                + "É permitida a edição e cópia, parcial ou completa, deste.<br>"
-                + "Outrossim, é de inteira responsabilidade do usuário qualquer alteração e/ou prática envolvendo este software, isentando, assim, o autor.<br>"
-                + "<br><br><br>Desenvolvido por<br><div style='color:" + _color + ";'>Jakecoll<br><br>"), "center, wrap");
-        _dialog.add(_label, "center");
+        dialog.add(
+                new JLabel(Constants.TEXT.get("FRAME_ABOUT_CREDITS").replaceAll("%F1%", colors[new Random().nextInt(colors.length)])), "center, wrap");
+        dialog.add(label, "center");
 
-        _dialog.setModal(true);
-        _dialog.setVisible(true);
+        dialog.setModal(true);
+        dialog.setVisible(true);
     }
 
     private void fillPalette() {
-        for (int i = cellRender.getListColors().size(); i < 255; i++) {
+        for (int i = cellRender.getListColors().size(); i < 255; i++)
             cellRender.getListColors().add(Color.WHITE);
-        }
 
-        if (cellRender.getListColors().size() == 255) {
+        if (cellRender.getListColors().size() == 255)
             cellRender.getListColors().add(Color.BLACK);
-        }
     }
 
 }

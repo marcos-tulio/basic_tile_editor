@@ -24,19 +24,20 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import mrcapybara.model.Constants;
 import net.miginfocom.swing.MigLayout;
 import mrcapybara.model.TableModel.TableModelCellRender;
 import mrcapybara.model.TableModel.TableModelStd;
 
 /**
  *
- * @author Jakecoll
+ * @author Marcos Santos
  */
-public class JFrameMain extends JFrame {
+public class FrameMain extends JFrame {
 
     protected final Color COLOR = new Color(225, 225, 225);
     protected final Color COLOR_HOVER = new Color(173, 173, 173);
-    protected final EtchedBorder BORDER = new EtchedBorder();
+    protected final EtchedBorder DEFAULT = new EtchedBorder();
 
     protected int blockSize = 22, columnBlocks = 16, rowBlocks = 16, offset = 0;
 
@@ -55,14 +56,14 @@ public class JFrameMain extends JFrame {
     protected TableModelStd tmWork;
     protected TableModelCellRender cellRender;
 
-    public JFrameMain() {
+    public FrameMain() {
         cellRender = new TableModelCellRender(new ArrayList<>());
         initComponents();
     }
 
     private void initComponents() {
         this.setLayout(new MigLayout());
-        this.setTitle("Basic Tile Editor - By Jakecoll");
+        this.setTitle(Constants.TEXT.get("APP_TITLE"));
         this.setSize(800, 700);
         this.setMinimumSize(new Dimension(200, 200));
         this.setLocationRelativeTo(null);
@@ -75,37 +76,42 @@ public class JFrameMain extends JFrame {
     }
 
     private JMenuBar menu() {
-
-        itemQuit = new JMenuItem("Sair");
-        itemAbout = new JMenuItem("Sobre");
-
-        itemOpen = customItem("Carregar ROM...", KeyEvent.VK_O, ActionEvent.CTRL_MASK);
-        itemSave = customItem("Salvar", KeyEvent.VK_S, ActionEvent.CTRL_MASK);
-        itemAdd = customItem("Próximo Byte", KeyEvent.VK_ADD, 0);
-        itemSub = customItem("Byte Anterior", KeyEvent.VK_SUBTRACT, 0);
-        itemNext = customItem("Próxima Linha", KeyEvent.VK_ADD, ActionEvent.CTRL_MASK);
-        itemPre = customItem("Linha Anterior", KeyEvent.VK_SUBTRACT, ActionEvent.CTRL_MASK);
-        itemSizeA = customItem("Aumentar Célula", KeyEvent.VK_ADD, ActionEvent.ALT_MASK);
-        itemSizeM = customItem("Diminuir Célula", KeyEvent.VK_SUBTRACT, ActionEvent.ALT_MASK);
-        itemColA = customItem("Adicionar Coluna", KeyEvent.VK_RIGHT, ActionEvent.ALT_MASK);
-        itemColM = customItem("Retirar Coluna", KeyEvent.VK_LEFT, ActionEvent.ALT_MASK);
-        itemRowA = customItem("Adicionar Linha", KeyEvent.VK_DOWN, ActionEvent.ALT_MASK);
-        itemRowM = customItem("Retirar Linha", KeyEvent.VK_UP, ActionEvent.ALT_MASK);
-        itemUndo = customItem("Desfazer", KeyEvent.VK_Z, ActionEvent.CTRL_MASK);
-
-        itemUndo.setEnabled(false);
+        // File menu items
+        itemQuit = new JMenuItem(Constants.TEXT.get("MENU_FILE_QUIT"));
+        itemOpen = customItem(Constants.TEXT.get("MENU_FILE_OPEN"), KeyEvent.VK_O, ActionEvent.CTRL_MASK);
+        itemSave = customItem(Constants.TEXT.get("MENU_FILE_SAVE"), KeyEvent.VK_S, ActionEvent.CTRL_MASK);
         itemSave.setEnabled(false);
 
-        JMenu file = new JMenu("Arquivo");
+        // File menu
+        final JMenu file = new JMenu(Constants.TEXT.get("MENU_FILE"));
         file.add(itemOpen);
         file.add(itemSave);
         file.addSeparator();
         file.add(itemQuit);
 
-        JMenu help = new JMenu("Ajuda");
+        // Help menu items
+        itemAbout = new JMenuItem(Constants.TEXT.get("MENU_HELP_ABOUT"));
+
+        // Help menu
+        final JMenu help = new JMenu(Constants.TEXT.get("MENU_HELP"));
         help.add(itemAbout);
 
-        JMenu edit = new JMenu("Editar");
+        // Edit menu items
+        itemAdd = customItem(Constants.TEXT.get("MENU_EDIT_NEXT_BYTE"), KeyEvent.VK_ADD, 0);
+        itemSub = customItem(Constants.TEXT.get("MENU_EDIT_PREV_BYTE"), KeyEvent.VK_SUBTRACT, 0);
+        itemNext = customItem(Constants.TEXT.get("MENU_EDIT_NEXT_ROW"), KeyEvent.VK_ADD, ActionEvent.CTRL_MASK);
+        itemPre = customItem(Constants.TEXT.get("MENU_EDIT_PREV_ROW"), KeyEvent.VK_SUBTRACT, ActionEvent.CTRL_MASK);
+        itemSizeA = customItem(Constants.TEXT.get("MENU_EDIT_INC_CELL"), KeyEvent.VK_ADD, ActionEvent.ALT_MASK);
+        itemSizeM = customItem(Constants.TEXT.get("MENU_EDIT_DEC_CELL"), KeyEvent.VK_SUBTRACT, ActionEvent.ALT_MASK);
+        itemColA = customItem(Constants.TEXT.get("MENU_EDIT_ADD_COL"), KeyEvent.VK_RIGHT, ActionEvent.ALT_MASK);
+        itemColM = customItem(Constants.TEXT.get("MENU_EDIT_REM_COL"), KeyEvent.VK_LEFT, ActionEvent.ALT_MASK);
+        itemRowA = customItem(Constants.TEXT.get("MENU_EDIT_ADD_ROW"), KeyEvent.VK_DOWN, ActionEvent.ALT_MASK);
+        itemRowM = customItem(Constants.TEXT.get("MENU_EDIT_REM_ROW"), KeyEvent.VK_UP, ActionEvent.ALT_MASK);
+        itemUndo = customItem(Constants.TEXT.get("MENU_EDIT_UNDO"), KeyEvent.VK_Z, ActionEvent.CTRL_MASK);
+        itemUndo.setEnabled(false);
+
+        // Edit menu
+        final JMenu edit = new JMenu(Constants.TEXT.get("MENU_EDIT"));
         edit.add(itemUndo);
         edit.addSeparator();
         edit.add(itemAdd);
@@ -123,7 +129,8 @@ public class JFrameMain extends JFrame {
         edit.add(itemRowA);
         edit.add(itemRowM);
 
-        JMenuBar menuBar = new JMenuBar();
+        // Menu bar
+        final JMenuBar menuBar = new JMenuBar();
         menuBar.add(file);
         menuBar.add(edit);
         menuBar.add(help);
@@ -132,46 +139,44 @@ public class JFrameMain extends JFrame {
     }
 
     private JMenuItem customItem(String txt, int key, int modify) {
-        JMenuItem _item = new JMenuItem(txt);
-        _item.setAccelerator(KeyStroke.getKeyStroke(key, modify));
-        return _item;
+        JMenuItem item = new JMenuItem(txt);
+        item.setAccelerator(KeyStroke.getKeyStroke(key, modify));
+        return item;
     }
 
     private JPanel panelLeft() {
-        JPanel _panel = new JPanel(new MigLayout("fill"));
-        _panel.add(panelOffset(), "growx, pushx, top, split, wrap");
-        _panel.add(panelConfig(), "growx, push, top, wrap");
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0"));
+        panel.add(panelOffset(), "growx, pushx, top, split, wrap");
+        panel.add(panelConfig(), "growx, push, top, wrap");
 
-        _panel.setBorder(BORDER);
-
-        return _panel;
+        return panel;
     }
 
     private JPanel panelConfig() {
-        JPanel _panel = new JPanel(new MigLayout());
-        _panel.setBorder(new TitledBorder(BORDER, "Tabela", 2, 0));
+        JPanel panel = new JPanel(new MigLayout());
+        panel.setBorder(new TitledBorder(DEFAULT, Constants.TEXT.get("PANEL_TABLE_TITLE"), TitledBorder.LEFT, TitledBorder.CENTER));
 
-        boxTxts = new JCheckBox("Exibir textos");
+        boxTxts = new JCheckBox(Constants.TEXT.get("PANEL_TABLE_SHOW_TXT"));
         boxTxts.setFocusable(false);
-        
+
         spinnerSize = new JSpinner(new SpinnerNumberModel(blockSize, 5, 30, 1));
         spinnerColum = new JSpinner(new SpinnerNumberModel(columnBlocks, 1, 50, 1));
         spinnerRow = new JSpinner(new SpinnerNumberModel(rowBlocks, 1, 100, 1));
 
-        _panel.add(new JLabel("Tamanho:"), "cell 0 1");
-        _panel.add(spinnerSize, "cell 1 1, growx, pushx");
-        _panel.add(new JLabel("Colunas:"), "cell 0 2");
-        _panel.add(spinnerColum, "cell 1 2, growx, pushx");
-        _panel.add(new JLabel("Linhas:"), "cell 0 3");
-        _panel.add(spinnerRow, "cell 1 3, growx, pushx");
-        _panel.add(boxTxts, "cell 0 4, span 2 2");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_TABLE_SIZE")), "cell 0 1");
+        panel.add(spinnerSize, "cell 1 1, growx, pushx");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_TABLE_COLS")), "cell 0 2");
+        panel.add(spinnerColum, "cell 1 2, growx, pushx");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_TABLE_ROWS")), "cell 0 3");
+        panel.add(spinnerRow, "cell 1 3, growx, pushx");
+        panel.add(boxTxts, "cell 0 4, span 2 2");
 
-        return _panel;
+        return panel;
     }
 
     private JPanel panelOffset() {
-        JPanel _panel = new JPanel(new MigLayout());
-        _panel.setBorder(new TitledBorder(BORDER, "Arquivo", 2, 0));
+        JPanel panel = new JPanel(new MigLayout());
+        panel.setBorder(new TitledBorder(DEFAULT, Constants.TEXT.get("PANEL_FILE_TITLE"), TitledBorder.LEFT, TitledBorder.CENTER));
 
         Font font = new Font("Arial", 1, 17);
 
@@ -197,33 +202,33 @@ public class JFrameMain extends JFrame {
         btnPre.setEnabled(false);
         btnPre.setFont(font);
 
-        _panel.add(new JLabel("Tam.:"), "cell 0 0");
-        _panel.add(txtSize, "cell 1 0, growx, pushx");
-        _panel.add(new JLabel("Offset:"), "cell 0 1");
-        _panel.add(txtOffset, "cell 1 1, growx, pushx, wrap");
-        _panel.add(btnMinus, "split, spanx 2, growx");
-        _panel.add(btnPlus, "wrap, growx");
-        _panel.add(btnPre, "split, spanx 2, growx");
-        _panel.add(btnNext, "growx");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_FILE_SIZE")), "cell 0 0");
+        panel.add(txtSize, "cell 1 0, growx, pushx");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_FILE_OFFSET")), "cell 0 1");
+        panel.add(txtOffset, "cell 1 1, growx, pushx, wrap");
+        panel.add(btnMinus, "split, spanx 2, growx");
+        panel.add(btnPlus, "wrap, growx");
+        panel.add(btnPre, "split, spanx 2, growx");
+        panel.add(btnNext, "growx");
 
-        return _panel;
+        return panel;
     }
 
     private JPanel panelPalette() {
-        JPanel _panel = new JPanel(new MigLayout());
-        _panel.setBorder(new TitledBorder(BORDER, "Paleta", 1, 0));
+        JPanel panel = new JPanel(new MigLayout());
+        panel.setBorder(new TitledBorder(DEFAULT, Constants.TEXT.get("PANEL_PALETTE_TITLE"), TitledBorder.LEFT, TitledBorder.CENTER));
 
-        ArrayList<String> _header = new ArrayList<>();
-        ArrayList<Class> _classes = new ArrayList<>();
+        final ArrayList<String> header = new ArrayList<>();
+        final ArrayList<Class> classes = new ArrayList<>();
 
         for (char i = 0; i < 16; i++) {
-            _header.add("");
-            _classes.add(String.class);
+            header.add("");
+            classes.add(String.class);
         }
 
-        TableModelStd _tmPalette = new TableModelStd(_header, _classes);
+        TableModelStd tmPalette = new TableModelStd(header, classes);
 
-        tablePalette = new JTable(_tmPalette) {
+        tablePalette = new JTable(tmPalette) {
             @Override
             public boolean getScrollableTracksViewportWidth() {
                 return false;
@@ -245,33 +250,33 @@ public class JFrameMain extends JFrame {
         tablePalette.setRowHeight(20);
         tablePalette.setRowSelectionAllowed(false);
 
-        JScrollPane _scrollPane = new JScrollPane(tablePalette);
-        _scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        JScrollPane scrollPane = new JScrollPane(tablePalette);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        ArrayList<String> _rows = new ArrayList<>();
-        for (char i = 0; i < _tmPalette.getColumnCount(); i++) {
+        ArrayList<String> rows = new ArrayList<>();
+        for (char i = 0; i < tmPalette.getColumnCount(); i++) {
             for (char j = 0; j < 16; j++) {
-                _rows.add((Integer.toHexString(i) + Integer.toHexString(j)).toUpperCase().replaceAll(" ", ""));
+                rows.add((Integer.toHexString(i) + Integer.toHexString(j)).toUpperCase().replaceAll(" ", ""));
             }
-            _tmPalette.addRow(_rows);
-            _rows.clear();
+            tmPalette.addRow(rows);
+            rows.clear();
         }
 
-        btnNewP = labelToBtn("Nova Paleta");
-        btnSaveP = labelToBtn("Salvar Paleta");
-        btnLoadP = labelToBtn("Carregar Paleta");
+        btnNewP = labelToBtn(Constants.TEXT.get("PANEL_PALETTE_NEW"));
+        btnSaveP = labelToBtn(Constants.TEXT.get("PANEL_PALETTE_SAVE"));
+        btnLoadP = labelToBtn(Constants.TEXT.get("PANEL_PALETTE_LOAD"));
 
-        _panel.add(btnNewP, "wmin 100px, hmin 25px, cell 1 0, pushy");
-        _panel.add(btnSaveP, "wmin 100px, hmin 25px, cell 1 1, pushy");
-        _panel.add(btnLoadP, "wmin 100px, hmin 25px, cell 1 2, pushy");
-        _panel.add(_scrollPane, "width 418px, left, cell 0 0, spany 3");
+        panel.add(btnNewP, "wmin 100px, hmin 25px, cell 1 0, pushy");
+        panel.add(btnSaveP, "wmin 100px, hmin 25px, cell 1 1, pushy");
+        panel.add(btnLoadP, "wmin 100px, hmin 25px, cell 1 2, pushy");
+        panel.add(scrollPane, "width 418px, left, cell 0 0, spany 3");
 
-        return _panel;
+        return panel;
     }
 
     private JPanel panelWorkSpace() {
-        JPanel _panel = new JPanel(new MigLayout());
-        _panel.setBorder(BORDER);
+        final JPanel panel = new JPanel(new MigLayout());
+        panel.setBorder(DEFAULT);
 
         slider = new JSlider(JSlider.VERTICAL);
         slider.setInverted(true);
@@ -295,22 +300,22 @@ public class JFrameMain extends JFrame {
         scrollWork.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollWork.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        _panel.add(slider, "cell 0 0, pushy, growy");
-        _panel.add(scrollWork, "cell 1 0, top");
-        _panel.setSize(420, 445);
+        panel.add(slider, "cell 0 0, pushy, growy");
+        panel.add(scrollWork, "cell 1 0, top");
+        panel.setSize(420, 445);
 
-        return _panel;
+        return panel;
     }
 
     private JPanel panelEdit() {
-        JPanel _panel = new JPanel(new MigLayout());
-        _panel.setBorder(new TitledBorder(BORDER, "Edição", 1, 0));
+        final JPanel panel = new JPanel(new MigLayout());
+        panel.setBorder(new TitledBorder(DEFAULT, Constants.TEXT.get("PANEL_EDIT_TITLE"), TitledBorder.LEFT, TitledBorder.CENTER));
 
-        boxEdit = new JCheckBox("Modo Edição");
+        boxEdit = new JCheckBox(Constants.TEXT.get("PANEL_EDIT_MODE"));
         boxEdit.setFocusable(false);
-        boxEdit.setToolTipText("Ao clicar em um byte, na tabela da ROM, ele será alterado");
+        boxEdit.setToolTipText(Constants.TEXT.get("PANEL_EDIT_MODE_TOOLTIP"));
 
-        boxSetPal = new JCheckBox("Editar Paleta");
+        boxSetPal = new JCheckBox(Constants.TEXT.get("PANEL_EDIT_PALETTE"));
         boxSetPal.setFocusable(false);
 
         lblColor1 = new JLabel("00", JLabel.CENTER);
@@ -323,25 +328,24 @@ public class JFrameMain extends JFrame {
         lblColor2.setBackground(Color.BLACK);
         lblColor2.setForeground(Color.WHITE);
 
-        _panel.add(boxEdit, "spanx 2, center, wrap");
-        _panel.add(boxSetPal, "spanx 2, center, wrap");
-        _panel.add(new JLabel("B. Esquerdo: "), "wmin 25px, hmin 25px");
-        _panel.add(lblColor1, "wmin 25px, hmin 25px, wrap");
-        _panel.add(new JLabel("B. Direito: "), "wmin 25px, hmin 25px");
-        _panel.add(lblColor2, "wmin 25px, hmin 25px");
+        panel.add(boxEdit, "spanx 2, center, wrap");
+        panel.add(boxSetPal, "spanx 2, center, wrap");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_EDIT_LEFT_BUTTON")), "wmin 25px, hmin 25px");
+        panel.add(lblColor1, "wmin 25px, hmin 25px, wrap");
+        panel.add(new JLabel(Constants.TEXT.get("PANEL_EDIT_RIGHT_BUTTON")), "wmin 25px, hmin 25px");
+        panel.add(lblColor2, "wmin 25px, hmin 25px");
 
-        return _panel;
+        return panel;
     }
 
     private JLabel labelToBtn(String txt) {
-        JLabel _label = new JLabel(txt, JLabel.CENTER);
+        JLabel label = new JLabel(txt, JLabel.CENTER);
 
-        _label.setFocusable(false);
-        _label.setOpaque(true);
-        _label.setBackground(COLOR);
-        _label.setBorder(BORDER);
+        label.setFocusable(false);
+        label.setOpaque(true);
+        label.setBackground(COLOR);
+        label.setBorder(DEFAULT);
 
-        return _label;
+        return label;
     }
-
 }
