@@ -26,5 +26,7 @@ public class FrameLanguage extends JFrame {
         this.add(new JLabel("Select your language:"), "push, grow, wrap");
         this.add(cbLanguages, "pushx, growx, wrap");
         this.add(btnOk, "pushx, growx");
+        
+        this.setResizable(false);
     }
 }
