@@ -9,5 +9,11 @@ import java.util.HashMap;
 public final class Constants {
 
     public static final HashMap<String, String> TEXT = new HashMap<>();
-    public static final String LANGUAGE_EXTESION = ".json";
+
+    public static final HashMap<String, String> LANGUAGES = new HashMap<>() {
+        {
+            put("English", "/languages/en-us.json");
+            put("Português Brasileiro", "/languages/pt-br.json");
+        }
+    };
 }

@@ -23,35 +23,23 @@ public final class CtrlJFLanguage extends FrameLanguage {
 
     public CtrlJFLanguage() {
         super();
-        searchLanguages();
+
+        // Carregar os idiomas
+        for (String values : Constants.LANGUAGES.keySet())
+            cbLanguages.addItem(values);;
 
         btnOk.addActionListener((e) -> {
             String file = cbLanguages.getSelectedItem().toString();
 
             if (file != null && !file.isBlank() && !file.isEmpty()) {
-                loadLanguage(file);
-                dispose();
+                loadTexts(Constants.LANGUAGES.get(file));
+                dispose(); 
             }
         });
     }
 
-    private void searchLanguages() {
-        try {
-            Stream<Path> walk = Files.walk(Paths.get(getClass().getResource("/languages").toURI()), 1);
-
-            for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
-                String file = it.next().getFileName().toString();
-
-                if (file.endsWith(Constants.LANGUAGE_EXTESION))
-                    cbLanguages.addItem(file.replaceAll(Constants.LANGUAGE_EXTESION, ""));
-            }
-        } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(CtrlJFLanguage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void loadLanguage(String language) {
-        try (InputStream stream = getClass().getResourceAsStream("/languages/" + language + Constants.LANGUAGE_EXTESION)) {
+    private void loadTexts(String languageJson) {
+        try (InputStream stream = getClass().getResourceAsStream(languageJson)) {
             String contents = new String(stream.readAllBytes(), Charset.forName("UTF-8"));
 
             final JSONObject json = new JSONObject(contents);
